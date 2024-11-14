@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal List</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #eaeaf0;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #ff6347;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .btn {
+            padding: 8px 12px;
+            background-color: #008CBA;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #005f7f;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+        }
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+        .create-button {
+            display: block;
+            margin: 20px auto;
+            width: fit-content;
+            background-color: #ff9800;
+        }
+    </style>
+</head>
+<body>
+<h1>Animal List</h1>
+<a class="btn create-button" href="/create">Create New Animal</a>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Scientific Name</th>
+        <th>Species</th>
+        <th>Habitat</th>
+        <th>Description</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody data-th-each="animal: ${animalList}">
+    <tr>
+        <td data-th-text="${animal.animalId}"></td>
+        <td data-th-text="${animal.name}"></td>
+        <td data-th-text="${animal.scientificName}"></td>
+        <td data-th-text="${animal.species}"></td>
+        <td data-th-text="${animal.habitat}"></td>
+        <td data-th-text="${animal.description}"></td>
+        <td>
+            <a class="btn" th:href="@{/animal/{id}(id=${animal.animalId})}">View</a>
+            <a class="btn" th:href="@{/update/{id}(id=${animal.animalId})}">Update</a>
+            <form action="/delete" method="post" style="display:inline;">
+                <input type="hidden" name="animalId" th:value="${animal.animalId}"/>
+                <button type="submit" class="btn btn-delete">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
