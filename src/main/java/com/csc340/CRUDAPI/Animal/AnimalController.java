@@ -1,15 +1,16 @@
 package com.csc340.CRUDAPI.Animal;
 
+import org.apache.tomcat.util.modeler.BaseAttributeFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * AnimalController.java.
  * Includes all REST API endpoint mappings for the Student object.
  */
-@RestController
+@Controller
 @RequestMapping("/animal")
 public class AnimalController {
 
@@ -23,8 +24,10 @@ public class AnimalController {
      * @return a list of Animals objects.
      */
     @GetMapping("/all")
-    public List<Animal> getAllAnimals() {
-        return service.getAllAnimals();
+    public String getAllAnimals(Model model) {
+        model.addAttribute("animalList", service.getAllAnimals());
+        model.addAttribute("title", "All Animals");
+        return "animal-list";
     }
 
     /**
@@ -36,8 +39,10 @@ public class AnimalController {
      */
 
     @GetMapping("/{animalId}")
-    public Animal getOneAnimal(@PathVariable int animalId) {
-        return service.getAnimalById(animalId);
+    public String getOneAnimal(@PathVariable int animalId, Model model) {
+        model.addAttribute("animal", service.getAnimalById(animalId));
+        model.addAttribute("title", animalId);
+        return "animal-details";
     }
 
     /**
@@ -49,9 +54,15 @@ public class AnimalController {
      * @return the updated list of Animals.
      */
     @PostMapping("/new")
-    public List<Animal> addNewAnimal(@RequestBody Animal animal) {
+    public String addNewAnimal(Animal animal) {
         service.addNewAnimal(animal);
-        return service.getAllAnimals();
+        return "redirect:/animal/all";
+    }
+
+    @PostMapping("/update")
+    public String updateAnimal(Animal animal) {
+        service.addNewAnimal(animal);
+        return "redirect:/animal/" + animal.getAnimalId();
     }
 
     /**
@@ -60,13 +71,18 @@ public class AnimalController {
      * "species": "", "habitat":"Rainforest", description":null}
      *
      * @param animalId the unique Animal Id.
-     * @param animal  the new update Animal details.
+     * @param animal   the new update Animal details.
      * @return the updated Animal object.
      */
-    @PutMapping("/update/{animalId}")
-    public Animal updateAnimal(@PathVariable int animalId, @RequestBody Animal animal) {
-        service.updateAnimal(animalId, animal);
-        return service.getAnimalById(animalId);
+    @GetMapping("/update/{animalId}")
+    public String updateAnimal(@PathVariable int animalId, Model model) {
+        model.addAttribute("animal", service.getAnimalById(animalId));
+        return "animal-update";
+    }
+
+    @GetMapping("/create")
+    public String createAnimalForm(){
+        return "animal-create";
     }
 
     /**
@@ -76,10 +92,10 @@ public class AnimalController {
      * @param animalId the unique Animal Id.
      * @return the updated list of Animals.
      */
-    @DeleteMapping("/delete/{animalId}")
-    public List<Animal> deleteAnimalById(@PathVariable int animalId) {
+    @GetMapping("/delete/{animalId}")
+    public String deleteAnimalById(int animalId) {
         service.deleteAnimalById(animalId);
-        return service.getAllAnimals();
+        return "redirect:/animal/all";
     }
 
     /**
@@ -91,8 +107,10 @@ public class AnimalController {
      */
 
     @GetMapping("/species/{species}")
-    public List<Animal> getAnimalsBySpecies(@PathVariable String species) {
-        return service.getAnimalBySpecies(species);
+    public String getAnimalsBySpecies(@RequestParam(name = "species", defaultValue = "unknown") String species, Model model) {
+        model.addAttribute("animalList", service.getAnimalBySpecies(species));
+        model.addAttribute("title", "Animal Species: "+species);
+        return "student-list";
     }
 
     /**
@@ -103,7 +121,9 @@ public class AnimalController {
      */
 
     @GetMapping("/search")
-    public List<Animal> searchAnimalsByName(@RequestParam String name) {
-        return service.searchAnimalByName(name);
+    public String searchAnimalsByName(@RequestParam(name = "name", defaultValue = "Blue Whale") String name, Model model) {
+        model.addAttribute("studentList", service.searchAnimalByName(name));
+        model.addAttribute("title", "Search Result: "+name);
+        return "student-list";
     }
 }
